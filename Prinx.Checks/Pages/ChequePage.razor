@@ -6,14 +6,6 @@
 
 @foreach (var cheque in cheques.Select((c, i) => new { Cheque = c, Index = i }))
 {
-    @* <div class="card m-2 p-3">
-        <h5>Cheque @(cheque.Index + 1)</h5>
-        <InputText @bind-Value="cheque.Cheque.Fecha" placeholder="Fecha" class="form-control mb-2" />
-        <InputText @bind-Value="cheque.Cheque.MontoNumerico" placeholder="Monto $" class="form-control mb-2" />
-        <InputText @bind-Value="cheque.Cheque.MontoEnLetras" maxlength="60" placeholder="Monto en Letras" class="form-control mb-2" />
-        <InputText @bind-Value="cheque.Cheque.Concepto" placeholder="Concepto" class="form-control mb-2" />
-        <button class="btn btn-danger btn-sm" @onclick="() => EliminarCheque(cheque.Index)">Eliminar</button>
-    </div> *@
     <div class="cheque-form border p-3 mb-4 rounded" style="background-color:#f9f9f9; font-family:'Courier New';">
         <div class="row mb-2 align-items-center">
             <!-- Columna 1 (vacía o para otro campo) -->

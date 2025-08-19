@@ -1,0 +1,138 @@
+﻿@page "/cheques"
+@using Prinx.Checks.Models
+@inject IJSRuntime JS
+
+<h3>Ingreso de Cheques</h3>
+
+@foreach (var cheque in cheques.Select((c, i) => new { Cheque = c, Index = i }))
+{
+    <div class="cheque-form border p-3 mb-4 rounded" style="background-color:#f9f9f9; font-family:'Courier New';">
+        <div class="row mb-2 align-items-center">
+            <!-- Columna 1 (vacía o para otro campo) -->
+            <div class="col-8">
+                <label class="col-2 fw-bold">Pay To:</label>
+                <InputText @bind-Value="cheque.Cheque.PayTo" class="form-control" />
+            </div>
+
+            <!-- Columna 3 (Fecha a la derecha) -->
+            <div class="col-4">
+                <label class="fw-bold me-2">Fecha:</label>
+                <InputText @bind-Value="cheque.Cheque.Fecha" class="form-control" />
+            </div>
+        </div>
+        <div class="row mb-2 align-items-center">
+            <!-- Columna 1 (vacía o para otro campo) -->
+            <div class="col-8">
+                <label class="col-2 fw-bold">Dollars:</label>
+                <InputText @bind-Value="cheque.Cheque.MontoEnLetras" class="form-control" maxlength="60" />
+            </div>
+            <!-- Columna 3 (Fecha a la derecha) -->
+            <div class="col-4">
+                <label class="col-2 fw-bold">Amount:</label>
+                <InputText @bind-Value="cheque.Cheque.MontoNumerico" class="form-control" />
+            </div>
+        </div>
+        <div class="row mb-2 align-items-center">
+            <!-- Columna 1 (vacía o para otro campo) -->
+            <div class="col-8">
+                <label class="col-2 fw-bold">For:</label>
+                <InputText @bind-Value="cheque.Cheque.Concepto" class="form-control" />
+            </div>
+            <!-- Columna 3 (Fecha a la derecha) -->
+            <div class="col-4">
+            </div>
+        </div>
+        <div class="row mb-2 align-items-center">
+            <!-- Columna 1 (vacía o para otro campo) -->
+            <div class="col-4">
+                <button class="btn btn-danger btn-sm" @onclick="() => EliminarCheque(cheque.Index)">Eliminar</button>
+            </div>
+            <!-- Columna 3 (Fecha a la derecha) -->
+            <div class="col-4">
+            </div>
+            <!-- Columna 3 (Fecha a la derecha) -->
+            <div class="col-4">
+            </div>
+        </div>
+    </div>
+
+
+}
+
+<div class="d-flex justify-content-start gap-2 mt-3">
+    @if (cheques.Count < 3)
+    {
+        <button class="btn btn-primary" @onclick="AgregarCheque">Agregar Cheque</button>
+    }
+
+    <button class="btn btn-success" @onclick="GenerarImpresion" disabled="@(cheques.Count == 0)">
+        Imprimir Cheques
+    </button>
+</div>
+
+
+@code {
+    List<ChequeModel> cheques = new()
+    {
+        new ChequeModel()
+    };
+
+    void AgregarCheque()
+    {
+        if (cheques.Count < 3)
+            cheques.Add(new ChequeModel());
+    }
+
+    void EliminarCheque(int index)
+    {
+        if (index >= 0 && index < cheques.Count)
+            cheques.RemoveAt(index);
+    }
+
+    async Task GenerarImpresion()
+    {
+        var htmlBuilder = new System.Text.StringBuilder();
+
+        htmlBuilder.AppendLine("<html>");
+        htmlBuilder.AppendLine("<head>");
+        htmlBuilder.AppendLine("<meta charset='utf-8'/>");
+        htmlBuilder.AppendLine("<style>");
+        htmlBuilder.AppendLine("body { margin: 0; font-family: 'Courier New', monospace; font-size: 12pt; }");
+        htmlBuilder.AppendLine(".cheque { width: 8in; height: 3in; position: relative; page-break-inside: avoid; padding: 0.3in 0.5in; box-sizing: border-box; display: inline-block; margin-right: 0.5in; vertical-align: top; }");
+        htmlBuilder.AppendLine(".field { position: absolute; white-space: nowrap; }");
+        htmlBuilder.AppendLine("</style>");
+        htmlBuilder.AppendLine("</head>");
+        htmlBuilder.AppendLine("<body>");
+
+        for (int i = 0; i < cheques.Count; i++)
+        {
+            var c = cheques[i];
+            double offset = i switch
+            {
+                0 => 0.0,   // Primer cheque
+                1 => 0.4,   // Segundo cheque (1 cm)
+                2 => 0.2,   // Tercer cheque (½ cm) ⬅️ ajuste solicitado
+                _ => 0.0
+            };
+
+
+            htmlBuilder.AppendLine($"<div class='cheque' style='margin-top: {offset}in;'>");
+
+            htmlBuilder.AppendLine($"<div class='field' style='top: 0.3in; left: 6.0in;'>{System.Net.WebUtility.HtmlEncode(c.Fecha)}</div>");
+            htmlBuilder.AppendLine($"<div class='field' style='top: 0.8in; left: 1.3in;'>{System.Net.WebUtility.HtmlEncode(c.PayTo)}</div>");
+            htmlBuilder.AppendLine($"<div class='field' style='top: 0.8in; left: 7.4in;'>{System.Net.WebUtility.HtmlEncode(c.MontoNumerico)}</div>");
+            htmlBuilder.AppendLine($"<div class='field' style='top: 1.2in; left: 0.1in;'>{System.Net.WebUtility.HtmlEncode(c.MontoEnLetras)}</div>");
+            htmlBuilder.AppendLine($"<div class='field' style='top: 1.9in; left: 1.3in;'>{System.Net.WebUtility.HtmlEncode(c.Concepto)}</div>");
+
+            htmlBuilder.AppendLine("</div>");
+        }
+
+
+        htmlBuilder.AppendLine("</body>");
+        htmlBuilder.AppendLine("</html>");
+
+        var html = htmlBuilder.ToString();
+        await JS.InvokeVoidAsync("printContent", html);
+
+    }
+}

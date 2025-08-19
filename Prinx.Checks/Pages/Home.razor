@@ -1,0 +1,108 @@
+﻿@page "/"
+
+<PageTitle>Inicio</PageTitle>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+
+    .home-container {
+        position: relative;
+        background-image: url("images/cheques.jpg"); /* Tu imagen real */
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* oscurece para mejor legibilidad */
+        z-index: 1;
+    }
+
+    .home-content {
+        z-index: 2;
+        max-width: 800px;
+        padding: 40px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        backdrop-filter: blur(4px);
+    }
+
+        .home-content h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .home-content p {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+
+    .features {
+        font-size: 1rem;
+        text-align: left;
+        margin: 0 auto 25px auto;
+        max-width: 600px;
+    }
+
+        .features li {
+            margin: 8px 0;
+        }
+
+    .cta-button {
+        padding: 12px 32px;
+        font-size: 1.1rem;
+        background-color: #0078D4;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .cta-button:hover {
+            background-color: #005A9E;
+        }
+</style>
+
+<div class="home-container">
+    <div class="overlay"></div>
+
+    <div class="home-content">
+        <h1>🧾 Sistema de Impresión de Cheques</h1>
+        <p>Tu herramienta confiable para emitir y gestionar cheques con total precisión.</p>
+
+        <ul class="features">
+            <li>✔️ Plantillas de cheques personalizables.</li>
+            <li>✔️ Compatible con bancos y formatos estándar.</li>
+            <li>✔️ Historial de cheques emitidos.</li>
+            <li>✔️ Vista previa antes de imprimir.</li>
+        </ul>
+
+        <button class="cta-button" @onclick="NavigateToCheques">Ir a Cheques</button>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    private NavigationManager Navigation { get; set; }
+
+    private void NavigateToCheques()
+    {
+        Navigation.NavigateTo("/cheques");
+    }
+}
